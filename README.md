@@ -1,22 +1,19 @@
-# k8s-prow-mirror
+# k8s-descheduler-mirror
 
-Prow images mirror.
+Mirror of k8s.gcr.io/descheduler/descheduler.
 
 gcr.io | docker hub
 ---|---
-gcr.io/k8s-prow/deck:v20201111-355c664138 | [zhangsean/k8s-prow-deck](https://hub.docker.com/r/zhangsean/k8s-prow-deck):v20201111-355c664138
-gcr.io/k8s-prow/hook:v20201111-355c664138 | [zhangsean/k8s-prow-hook](https://hub.docker.com/r/zhangsean/k8s-prow-hook):v20201111-355c664138
-gcr.io/k8s-prow/horologium:v20201111-355c664138 | [zhangsean/k8s-prow-horologium](https://hub.docker.com/r/zhangsean/k8s-prow-horologium):v20201111-355c664138
-gcr.io/k8s-prow/plank:v20201111-355c664138 | [zhangsean/k8s-prow-plank](https://hub.docker.com/r/zhangsean/k8s-prow-plank):v20201111-355c664138
-gcr.io/k8s-prow/sinker:v20201111-355c664138 | [zhangsean/k8s-prow-sinker](https://hub.docker.com/r/zhangsean/k8s-prow-sinker):v20201111-355c664138
-gcr.io/k8s-prow/status-reconciler:v20201111-355c664138 | [zhangsean/k8s-prow-status-reconciler](https://hub.docker.com/r/zhangsean/k8s-prow-status-reconciler):v20201111-355c664138
-gcr.io/k8s-prow/tide:v20201111-355c664138 | [zhangsean/k8s-prow-tide](https://hub.docker.com/r/zhangsean/k8s-prow-tide):v20201111-355c664138
+k8s.gcr.io/descheduler/descheduler:v0.19.0 | [zhangsean/descheduler](zhangsean/descheduler:v0.19.0)
 
 ## Usage
 
-```bash
-# Deploy latest prow
-curl -sSL https://github.com/kubernetes/test-infra/raw/master/config/prow/cluster/starter-s3.yaml | sed 's|gcr.io/k8s-prow/|zhangsean/k8s-prow-|g' | kubectl apply -f -
-# Or change local starter.yaml
-sed -i '' 's|gcr.io/k8s-prow/|zhangsean/k8s-prow-|g' starter-s3.yaml
+```sh
+# Deploy using helm
+helm repo add descheduler https://kubernetes-sigs.github.io/descheduler/
+helm install descheduler --namespace kube-system descheduler/descheduler-helm-chart --image.repository zhangsean/descheduler
+# Deploy using yaml, Run As A CronJob
+kubectl create -f https://github.com/kubernetes-sigs/descheduler/raw/master/kubernetes/base/rbac.yaml
+kubectl create -f https://github.com/kubernetes-sigs/descheduler/raw/master/kubernetes/base/configmap.yaml
+curl -sSL https://github.com/kubernetes-sigs/descheduler/raw/master/kubernetes/cronjob/cronjob.yaml | sed 's|k8s.gcr.io/descheduler|zhangsean|g' | kubectl create -f -
 ```

@@ -1,15 +1,15 @@
 #=================================================
-# https://github.com/zhangsean/k8s-prow
-# Description: Auto check latest prow release and tag docker image zhangsean/k8s-prow using GitHub Actions
+# https://github.com/zhangsean/k8s-descheduler-mirror
+# Description: Auto check latest descheduler release and tag docker image zhangsean/descheduler using GitHub Actions
 # License: Apache V2.0
 # Author: ZhangSean
 #=================================================
 
-name: Follow up prow release
+name: Follow up descheduler release
 
 on:
   schedule:
-    - cron: 1 23 * * *
+    - cron: 1 0 * * *
   watch:
     types: [started]
     if: github.event.repository.owner.id == github.event.sender.id
@@ -28,25 +28,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@master
 
-      - name: Check prow release
+      - name: Check new release
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           git fetch --tags
-          export CURRENT=$(grep k8s-prow deck.Dockerfile | awk -F: '{print $2}')
+          export CURRENT=$(cat Dockerfile | awk -F: '{print $2}')
           echo "CURRENT=$CURRENT"
-          export LATEST=$(curl -sSL https://github.com/kubernetes/test-infra/raw/master/config/prow/cluster/starter-s3.yaml | sed -n '/hook/s/.*:\(v.*\)/\1/p')
+          export LATEST=$(curl -I https://github.com/kubernetes-sigs/descheduler/releases/latest | sed -n '/tag/s/.*tag\/\(v.*\)./\1/p')
           echo "LATEST=$LATEST"
           if [ "$LATEST" != "$CURRENT" ]; then
-            echo "New Prow release: $LATEST"
+            echo "New descheduler released: $LATEST"
             echo "CURRENT=$CURRENT" >> $GITHUB_ENV
             echo "LATEST=$LATEST" >> $GITHUB_ENV
           else
-            echo "No new Prow release"
+            echo "No new descheduler released"
             echo "LATEST=" >> $GITHUB_ENV
           fi
 
-      - name: Bump to new prow tag
+      - name: Bump to new tag
         if: success() && env.CURRENT != '' && env.LATEST != ''
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -54,14 +54,10 @@ jobs:
         run: |
           echo "Changing tag from $CURRENT to $LATEST"
           sed -i "s/$CURRENT/$LATEST/g" README.md
-          for file in $(ls *.Dockerfile); do
-              echo $file
-              sed -i "s/$CURRENT/$LATEST/g" $file
-              cat $file
-          done
+          sed -i "s/$CURRENT/$LATEST/g" Dockerfile
           git config user.email zxf2342@qq.com
           git config user.name zhangsean
-          git commit -a -m "Bump to prow $LATEST"
+          git commit -a -m "Bump to descheduler $LATEST"
           git push
 
       - name: Create new release
@@ -73,6 +69,6 @@ jobs:
           tag_name: ${{ env.LATEST }}
           release_name: ${{ env.LATEST }}
           body: |
-            Bump to prow ${{ env.LATEST }}
+            Bump to descheduler ${{ env.LATEST }}
           draft: false
           prerelease: false
