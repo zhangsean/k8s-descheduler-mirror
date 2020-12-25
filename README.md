@@ -23,7 +23,7 @@ kubectl create -f https://github.com/kubernetes-sigs/descheduler/raw/master/kube
 curl -sSL https://github.com/kubernetes-sigs/descheduler/raw/master/kubernetes/cronjob/cronjob.yaml \
   | sed 's|k8s.gcr.io/descheduler|zhangsean|g' \
   | kubectl create -f -
-# Set the cron schedule to run the descheduler job on "*/2 * * * *"
+# Set the cron schedule to run the descheduler job on "*/10 * * * *"
 curl -sSL https://github.com/kubernetes-sigs/descheduler/raw/master/kubernetes/cronjob/cronjob.yaml \
   | sed 's|k8s.gcr.io/descheduler|zhangsean|g;s|*/2|*/10|g' \
   | kubectl create -f -
