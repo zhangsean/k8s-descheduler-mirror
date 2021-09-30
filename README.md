@@ -4,7 +4,7 @@ Mirror of `k8s.gcr.io/descheduler/descheduler`.
 
 gcr.io | docker hub
 ---|---
-k8s.gcr.io/descheduler/descheduler:v0.21.0 | [zhangsean/descheduler:v0.21.0](https://hub.docker.com/r/zhangsean/descheduler/)
+k8s.gcr.io/descheduler/descheduler:v0.22.1 | [zhangsean/descheduler:v0.22.1](https://hub.docker.com/r/zhangsean/descheduler/)
 
 ## Usage
 
